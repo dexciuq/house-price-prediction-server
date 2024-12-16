@@ -4,6 +4,7 @@ import joblib
 from flask import Flask, request, jsonify
 import pandas as pd
 import numpy as np
+from flask_cors import CORS 
 from dotenv import load_dotenv
 from download import download_all_models_from_folder
 from preprocess import preprocess_input
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Flask app configuration
 app = Flask(__name__)
+CORS(app)
 PORT = int(os.getenv('PORT', 5000))
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
