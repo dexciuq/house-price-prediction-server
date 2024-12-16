@@ -20,11 +20,6 @@ app = Flask(__name__)
 PORT = int(os.getenv('PORT', 5000))
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# Download models from Google Drive
-FOLDER_ID = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
-logger.info(f"Downloading models from Google Drive folder: {FOLDER_ID}")
-download_all_models_from_folder(FOLDER_ID)
-
 # Load all models dynamically from the /models folder
 models = {}
 models_dir = 'models'
@@ -86,5 +81,17 @@ def predict():
     except Exception as e:
         return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
+
 if __name__ == '__main__':
+    if not os.path.exists('models'):
+        os.makedirs('models')
+        logger.info("Created 'models' directory.")
+
+    if not os.listdir('models'):
+        FOLDER_ID = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
+        logger.info(f"Downloading models from Google Drive folder: {FOLDER_ID}")
+        download_all_models_from_folder(FOLDER_ID)
+    else:
+        logger.info("Models already exist. Skipping download.")
+        
     app.run(debug=DEBUG, host='0.0.0.0', port=PORT)
